@@ -7,7 +7,7 @@ class ModelConfig:
     input_dim: int  # set by Config
     latent_dim: int = 256
 
-    codebook_sizes: List[int] = field(default_factory=lambda: [20, 40])
+    codebook_sizes: List[int] = field(default_factory=lambda: [50, 300])
 
     # Encoder/Decoder
     dropout: float = 0.0
