@@ -42,7 +42,7 @@ class VQ(nn.Module):
 
         vq_loss = F.mse_loss(z_q, z.detach(), reduction="none")
         commitment_loss = F.mse_loss(z, z_q.detach(), reduction="none")
-        loss = torch.sum(vq_loss + self.commitment_beta * commitment_loss, dim=1)
+        loss = torch.mean(vq_loss + self.commitment_beta * commitment_loss, dim=1)
 
         z_out = z + (z_q - z).detach()  # grads should only flow through z
 

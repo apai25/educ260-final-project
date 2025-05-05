@@ -9,7 +9,7 @@ class DataConfig:
     ).resolve()
 
     course_embed_dir: Path = Path(
-        "/data/groups/ccc/working/openai_mpsr_ccc/0"
+        "/data/groups/ccc/CCN/CCN/ccc/crossvalid_all/models/ssa_openai/0"
     ).resolve()
 
     data_save_dir: Path = Path("data").resolve()
