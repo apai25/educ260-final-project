@@ -62,9 +62,9 @@ class CourseDataset(Dataset):
             pickle.dump(final_data, f)
 
         return final_data
-    
+
     def __getitem__(self, index):
         return self.data[index]
-    
+
     def __len__(self):
         return len(self.data)
