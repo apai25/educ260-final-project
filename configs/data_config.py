@@ -13,3 +13,4 @@ class DataConfig:
     ).resolve()
 
     data_save_dir: Path = Path("data").resolve()
+    embed_dim: int = 1536
