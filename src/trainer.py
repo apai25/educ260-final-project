@@ -92,11 +92,14 @@ class Trainer:
             avg_train_loss = train_loss / len(self.train_loader)
             self.train_losses.append(avg_train_loss)
 
-            val_loss = self.eval()
-            self.val_losses.append(val_loss)
-
-            print(f"Epoch {self.ep} - Train Loss: {avg_train_loss:.4f} | Val Loss: {val_loss:.4f}")
-            self.save_model()
+            if (self.ep % self.cfg.train.eval_every == 0) or (self.ep == self.cfg.train.epochs):
+                val_loss = self.eval()
+                self.val_losses.append(val_loss)
+                print(f"Epoch {self.ep} - Train Loss: {avg_train_loss:.4f} | Val Loss: {val_loss:.4f}")
+            else:
+                print(f"Epoch {self.ep} - Train Loss: {avg_train_loss:.4f}")
+            if (self.ep % self.cfg.train.save_every == 0) or (self.ep == self.cfg.train.epochs):
+                self.save_model()
 
         torch.save(
             {"train_losses": self.train_losses, "val_losses": self.val_losses},
