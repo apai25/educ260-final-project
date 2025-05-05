@@ -1,5 +1,6 @@
-from dataclasses import dataclass 
+from dataclasses import dataclass
 
-@dataclass 
+
+@dataclass
 class ModelConfig:
     pass

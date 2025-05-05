@@ -1,7 +1,9 @@
-from dataclasses import dataclass 
-from src.configs.model_config import ModelConfig
-from src.configs.train_config import TrainConfig
-from src.configs.data_config import DataConfig
+from dataclasses import dataclass
+
+from configs.data_config import DataConfig
+from configs.model_config import ModelConfig
+from configs.train_config import TrainConfig
+
 
 @dataclass
 class Config:
