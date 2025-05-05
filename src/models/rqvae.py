@@ -63,7 +63,7 @@ class RQVAE(nn.Module):
 
         x_hat = self.dec(z_q)
 
-        recon_loss = F.mse_loss(x_hat, x)
+        recon_loss = F.mse_loss(x_hat, x, reduction="none").mean(dim=1)
         vq_losses = torch.stack([vq_out.loss for vq_out in vq_outs], dim=1)
         loss = (torch.sum(vq_losses, dim=1) + recon_loss)
 
