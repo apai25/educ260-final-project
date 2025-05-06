@@ -21,7 +21,7 @@ class VQ(nn.Module):
         self.codebook_size = codebook_size
         self.commitment_beta = commitment_beta
 
-        self.codes = nn.Parameter(torch.randn(codebook_size, latent_dim))
+        self.codes = nn.Parameter(torch.rand(codebook_size, latent_dim))
 
     def forward(self, z: torch.Tensor):
         """
