@@ -44,7 +44,7 @@ class Taxonomy:
 
         if cfg.cluster_fn == "llm":
             self.cluster_fn = lambda courses, k, topic_path: cluster_fn(
-                courses, k, topic_path, model=cfg.model
+                courses, k, topic_path, model=cfg.model, batch_size=cfg.batch_size
             )
         else:
             raise ValueError(f"Unknown clustering function: {cfg.cluster_fn}")
@@ -55,6 +55,9 @@ class Taxonomy:
         )
 
     def build(self, node: TaxonomyNode, levels_remaining: List[int]) -> None:
+        if node.parent:
+            node.parent.courses = []
+
         if not levels_remaining:
             return
 

@@ -1,9 +1,8 @@
 import json
 import os
+import re
 import time
 from typing import Dict, List
-
-import re
 
 from openai import OpenAI
 
@@ -12,18 +11,18 @@ from src.taxonomy.course import CourseNode
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-def cluster_fn(
-    courses: List[CourseNode], k: int, topic_path: List[str], model: str = "gpt-4o"
-) -> Dict[str, List[CourseNode]]:
-    """
-    Two-stage LLM-based clustering: (1) generate k topic labels, (2)
-    assign each course to one label.
-    Returns: Dict[topic, List[CourseNode]]
-    """
+from math import ceil
 
+
+def cluster_fn(
+    courses: List[CourseNode],
+    k: int,
+    topic_path: List[str],
+    model: str = "gpt-4o",
+    batch_size: int = 50,
+) -> Dict[str, List[CourseNode]]:
     ## Stage 1: Generate Topic Labels
     label_prompt = build_label_gen_prompt(courses, k, topic_path)
-
     for attempt in range(3):
         try:
             completion = client.chat.completions.create(
@@ -34,7 +33,9 @@ def cluster_fn(
             label_raw = remove_wrappers(completion.choices[0].message.content.strip())
             topics = json.loads(label_raw)
             if not isinstance(topics, list) or len(topics) != k:
-                raise ValueError(f"Expected list of {k} topics, got: {topics}")
+                raise ValueError(
+                    f"Expected list of {k} topics, got: {len(topics), topics}"
+                )
             break
         except Exception as e:
             print(f"[cluster_fn] Label generation failed (attempt {attempt + 1}): {e}")
@@ -42,25 +43,44 @@ def cluster_fn(
     else:
         raise RuntimeError("Failed to generate topic labels after 3 attempts.")
 
-    ## Stage 2: Assign Courses
-    assign_prompt = build_assignment_prompt(courses, topics)
+    ## Stage 2: Batched Course Assignment
+    assignments: Dict[str, str] = {}
+    total_batches = ceil(len(courses) / batch_size)
 
-    for attempt in range(3):
-        try:
-            completion = client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": assign_prompt}],
-                temperature=0.3,
+    for batch_idx in range(total_batches):
+        batch_courses = courses[batch_idx * batch_size : (batch_idx + 1) * batch_size]
+        assign_prompt = build_assignment_prompt(batch_courses, topics)
+
+        for attempt in range(3):
+            try:
+                completion = client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": assign_prompt}],
+                    temperature=0.3,
+                )
+                assignment_raw = remove_wrappers(
+                    completion.choices[0].message.content.strip()
+                )
+                batch_assignments = json.loads(assignment_raw)
+
+                if not isinstance(batch_assignments, dict) or len(
+                    batch_assignments
+                ) != len(batch_courses):
+                    raise ValueError(
+                        f"Expected dict of {len(batch_courses)} assignments, got: {len(batch_assignments), batch_assignments}"
+                    )
+
+                assignments.update(batch_assignments)
+                break
+            except Exception as e:
+                print(
+                    f"[cluster_fn] Assignment failed on batch {batch_idx + 1}/{total_batches} (attempt {attempt + 1}): {e}"
+                )
+                time.sleep(2)
+        else:
+            raise RuntimeError(
+                f"Failed to assign courses for batch {batch_idx + 1} after 3 attempts."
             )
-            assignment_raw = remove_wrappers(completion.choices[0].message.content.strip())
-            print(assignment_raw)
-            assignments = json.loads(assignment_raw)
-            break
-        except Exception as e:
-            print(f"[cluster_fn] Assignment failed (attempt {attempt + 1}): {e}")
-            time.sleep(2)
-    else:
-        raise RuntimeError("Failed to assign courses after 3 attempts.")
 
     ## Construct cluster dict
     topic_to_courses: Dict[str, List[CourseNode]] = {t: [] for t in topics}
@@ -120,7 +140,8 @@ def build_assignment_prompt(courses: List[CourseNode], topics: List[str]) -> str
     {{"course1": "Topic A", "course2": "Topic B", ...}}
 
     Just return the raw string-representation of the dict, without any additional
-    formatting.
+    formatting. Be careful to ensure ALL courses are assigned to one of the subtopics; do not leave any of them out in your response.
+    Go about this sequentially, assigning each course to one of the topics in order. 
     """
 
 
