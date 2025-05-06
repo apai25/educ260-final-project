@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import List
 
 import torch
 from torch import nn
@@ -50,12 +51,12 @@ class RQVAE(nn.Module):
             dropout=cfg.dropout,
         )
 
+        self.layer_norm = nn.LayerNorm(cfg.latent_dim)
+
     def forward(self, x):
         z = self.enc(x)
+        z = self.layer_norm(z)
 
-        if self.training:
-            z = z + torch.randn_like(z) * 0.1
-        
         z_q_total = torch.zeros_like(z)
         vq_outs = []
         residual = z
@@ -70,7 +71,7 @@ class RQVAE(nn.Module):
 
         recon_loss = F.mse_loss(x_hat, x, reduction="none").mean(dim=1)
         vq_losses = torch.stack([vq_out.loss for vq_out in vq_outs], dim=1)
-        loss = (torch.sum(vq_losses, dim=1) + recon_loss)
+        loss = torch.sum(vq_losses, dim=1) + recon_loss
 
         indices = torch.stack([vq_out.indices for vq_out in vq_outs], dim=1)
 
@@ -80,3 +81,9 @@ class RQVAE(nn.Module):
             indices=indices,
         )
         return out
+
+    def reinit_codes(self, indices: List[torch.Tensor]):
+        assert len(indices) == len(self.vqs), "Mismatch in codebooks vs indices"
+        for vq, idx in zip(self.vqs, indices):
+            if len(idx) > 0:
+                vq.reinit_codes(idx)

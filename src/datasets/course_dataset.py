@@ -69,6 +69,7 @@ class CourseDataset(Dataset):
     def __len__(self):
         return len(self.data)
 
+
 def course_collate_fn(batch):
     control_numbers = [item["control_number"] for item in batch]
     embeddings = torch.stack([item["embedding"] for item in batch])

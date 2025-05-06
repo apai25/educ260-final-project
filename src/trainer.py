@@ -1,15 +1,15 @@
 import os
+from collections import Counter
 from datetime import datetime
 
 import torch
+from torch.utils.data import DataLoader, random_split
 from tqdm import tqdm
 
 from configs.config import Config
 from src.datasets.course_dataset import CourseDataset, course_collate_fn
 from src.models.rqvae import RQVAE
 
-
-from torch.utils.data import DataLoader, random_split
 
 class Trainer:
     def __init__(self, cfg: Config):
@@ -22,8 +22,9 @@ class Trainer:
         train_size = total_size - val_size
 
         self.train_dataset, self.val_dataset = random_split(
-            full_dataset, [train_size, val_size],
-            generator=torch.Generator().manual_seed(42)  # reproducibility
+            full_dataset,
+            [train_size, val_size],
+            generator=torch.Generator().manual_seed(42),  # reproducibility
         )
 
         self.train_loader = DataLoader(
@@ -62,7 +63,9 @@ class Trainer:
         os.makedirs(self.checkpoint_dir, exist_ok=True)
 
         # Save configs
-        torch.save(vars(cfg.train), os.path.join(self.outputs_dir, "trainer_config.pth"))
+        torch.save(
+            vars(cfg.train), os.path.join(self.outputs_dir, "trainer_config.pth")
+        )
         torch.save(vars(cfg.model), os.path.join(self.outputs_dir, "model_config.pth"))
         torch.save(vars(cfg.data), os.path.join(self.outputs_dir, "data_config.pth"))
 
@@ -76,30 +79,53 @@ class Trainer:
             self.ep = ep + 1
 
             train_loss = 0.0
-            for data in tqdm(self.train_loader, desc=f"Epoch {self.ep} / {self.cfg.train.epochs}"):
+            codebook_usages = [Counter() for _ in range(len(self.rqvae.vqs))]
+            for data in tqdm(
+                self.train_loader, desc=f"Epoch {self.ep} / {self.cfg.train.epochs}"
+            ):
                 x = data["embedding"].to(self.device)
                 out = self.rqvae(x)
 
                 loss = out.loss.mean()
                 self.optim.zero_grad()
                 loss.backward()
-                torch.nn.utils.clip_grad_norm_(self.rqvae.parameters(), self.cfg.train.grad_clip)
+                torch.nn.utils.clip_grad_norm_(
+                    self.rqvae.parameters(), self.cfg.train.grad_clip
+                )
                 self.optim.step()
                 self.scheduler.step()
 
                 train_loss += loss.item()
 
+                for i in range(out.indices.shape[1]):
+                    codebook_usages[i].update(out.indices[:, i].cpu().tolist())
+
             avg_train_loss = train_loss / len(self.train_loader)
             self.train_losses.append(avg_train_loss)
 
-            if (self.ep % self.cfg.train.eval_every == 0) or (self.ep == self.cfg.train.epochs):
+            if (self.ep % self.cfg.train.eval_every == 0) or (
+                self.ep == self.cfg.train.epochs
+            ):
                 val_loss = self.eval()
                 self.val_losses.append(val_loss)
-                print(f"Epoch {self.ep} - Train Loss: {avg_train_loss:.4f} | Val Loss: {val_loss:.4f}")
+                print(f"Train Loss: {avg_train_loss:.4f} | Val Loss: {val_loss:.4f}")
             else:
-                print(f"Epoch {self.ep} - Train Loss: {avg_train_loss:.4f}")
-            if (self.ep % self.cfg.train.save_every == 0) or (self.ep == self.cfg.train.epochs):
+                print(f"Train Loss: {avg_train_loss:.4f}")
+            if (self.ep % self.cfg.train.save_every == 0) or (
+                self.ep == self.cfg.train.epochs
+            ):
                 self.save_model()
+
+            reinit_indices = []
+            for i, counter in enumerate(codebook_usages):
+                unused = [
+                    k for k in range(self.rqvae.vqs[i].codebook_size) if counter[k] == 0
+                ]
+                reinit_indices.append(
+                    torch.tensor(unused, device=self.device, dtype=torch.long)
+                )
+
+            self.rqvae.reinit_codes(reinit_indices)
 
         torch.save(
             {"train_losses": self.train_losses, "val_losses": self.val_losses},
