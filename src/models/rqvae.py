@@ -52,6 +52,9 @@ class RQVAE(nn.Module):
 
     def forward(self, x):
         z = self.enc(x)
+
+        if self.training:
+            z = z + torch.randn_like(z) * 0.1
         
         z_q_total = torch.zeros_like(z)
         vq_outs = []

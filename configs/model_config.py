@@ -17,4 +17,4 @@ class ModelConfig:
     activation: str = "relu"
 
     # Loss
-    commitment_beta: float = 1.0
+    commitment_beta: float = 2.0

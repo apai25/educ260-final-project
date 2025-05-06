@@ -44,7 +44,14 @@ class VQ(nn.Module):
         commitment_loss = F.mse_loss(z, z_q.detach(), reduction="none")
         loss = torch.mean(vq_loss + self.commitment_beta * commitment_loss, dim=1)
 
-        z_out = z + (z_q - z).detach()  # grads should only flow through z
+        if self.training:
+            entropy_weight = 0.1
+            one_hot = F.one_hot(indices, num_classes=self.codebook_size).float()
+            avg_probs = one_hot.mean(dim=0)
+            entropy = -(avg_probs * (avg_probs + 1e-10).log()).sum()
+            loss = loss - entropy_weight * entropy
+
+        z_out = z + (z_q - z).detach()
 
         out = VQOutput(
             z_q=z_out,
