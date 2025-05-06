@@ -52,16 +52,18 @@ class RQVAE(nn.Module):
 
     def forward(self, x):
         z = self.enc(x)
-
+        
+        z_q_total = torch.zeros_like(z)
         vq_outs = []
         residual = z
         for vq in self.vqs:
             vq_out = vq(residual)
             z_q = vq_out.z_q
-            residual = z - z_q.detach()
+            residual = residual - z_q.detach()
+            z_q_total = z_q_total + z_q
             vq_outs.append(vq_out)
 
-        x_hat = self.dec(z_q)
+        x_hat = self.dec(z_q_total)
 
         recon_loss = F.mse_loss(x_hat, x, reduction="none").mean(dim=1)
         vq_losses = torch.stack([vq_out.loss for vq_out in vq_outs], dim=1)
