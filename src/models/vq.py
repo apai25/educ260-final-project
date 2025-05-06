@@ -48,6 +48,4 @@ class VQ(nn.Module):
 
     def reinit_codes(self, indices: torch.Tensor):
         with torch.no_grad():
-            self.codes.data[indices] = (
-                torch.randn_like(self.codes.data[indices]) * 2
-            )
+            self.codes.data[indices] = torch.randn_like(self.codes.data[indices]) * 2

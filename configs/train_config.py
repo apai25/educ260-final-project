@@ -15,6 +15,6 @@ class TrainConfig:
     num_workers: int = 64
     pin_memory: bool = True
 
-    outputs_dir: Path = Path("outputs").resolve()
+    outputs_dir: Path = Path("outputs/rqvae").resolve()
     save_every: int = 10
     eval_every: int = 5
