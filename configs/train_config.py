@@ -18,4 +18,4 @@ class TrainConfig:
 
     outputs_dir: Path = Path("outputs/rqvae").resolve()
     save_every: int = 10
-    eval_every: int = 5
+    eval_every: int = 1

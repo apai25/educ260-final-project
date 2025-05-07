@@ -47,24 +47,21 @@ class RQVAE(nn.Module):
             hidden_dims=cfg.dec_hidden_dims,
             output_dims=cfg.input_dim,
             activation=cfg.activation,
-            batch_norm=cfg.batch_norm,
+            batch_norm=False,  # no batch norm in dec
             dropout=cfg.dropout,
         )
 
-        self.layer_norm = nn.LayerNorm(cfg.latent_dim)
-
     def forward(self, x):
         z = self.enc(x)
-        z = F.normalize(z, dim=1)
 
-        z_q_total = torch.zeros_like(z)
+        z_q_total = torch.zeros_like(z, device=x.device)
         vq_outs = []
         residual = z
         for vq in self.vqs:
             vq_out = vq(residual)
             z_q = vq_out.z_q
             residual = residual - z_q.detach()
-            z_q_total = z_q_total + z_q
+            z_q_total = z_q_total + z_q.detach()
             vq_outs.append(vq_out)
 
         x_hat = self.dec(z_q_total)
