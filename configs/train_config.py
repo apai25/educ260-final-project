@@ -9,6 +9,7 @@ class TrainConfig:
     init_lr: float = 1e-3
     min_lr: float = 1e-5
     grad_clip: float = 1.0
+    reinit_unused: bool = True
 
     val_split: float = 0.2
 

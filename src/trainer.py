@@ -116,16 +116,17 @@ class Trainer:
             ):
                 self.save_model()
 
-            reinit_indices = []
-            for i, counter in enumerate(codebook_usages):
-                unused = [
-                    k for k in range(self.rqvae.vqs[i].codebook_size) if counter[k] == 0
-                ]
-                reinit_indices.append(
-                    torch.tensor(unused, device=self.device, dtype=torch.long)
-                )
+            if self.cfg.train.reinit_unused:
+                reinit_indices = []
+                for i, counter in enumerate(codebook_usages):
+                    unused = [
+                        k for k in range(self.rqvae.vqs[i].codebook_size) if counter[k] == 0
+                    ]
+                    reinit_indices.append(
+                        torch.tensor(unused, device=self.device, dtype=torch.long)
+                    )
 
-            self.rqvae.reinit_codes(reinit_indices)
+                self.rqvae.reinit_codes(reinit_indices)
 
         torch.save(
             {"train_losses": self.train_losses, "val_losses": self.val_losses},

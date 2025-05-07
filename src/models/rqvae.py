@@ -55,7 +55,7 @@ class RQVAE(nn.Module):
 
     def forward(self, x):
         z = self.enc(x)
-        z = self.layer_norm(z)
+        z = F.normalize(z, dim=1)
 
         z_q_total = torch.zeros_like(z)
         vq_outs = []

@@ -5,7 +5,7 @@ from typing import List
 @dataclass
 class ModelConfig:
     input_dim: int  # set by Config
-    latent_dim: int = 64
+    latent_dim: int = 128
 
     codebook_sizes: List[int] = field(default_factory=lambda: [10, 50])
 
