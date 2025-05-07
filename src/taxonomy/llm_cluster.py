@@ -13,6 +13,36 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 from math import ceil
 
+def get_llm_response(
+    prompt: str,
+    model: str) -> str:
+    SUPPORTED_MODELS = [
+        "gpt-4o",
+        "o3-mini",
+        "o4-mini",
+        "o1-mini",
+    ]
+
+    if model not in SUPPORTED_MODELS:
+        raise ValueError(f"Model {model} is not supported. Supported models are: {SUPPORTED_MODELS}")
+    
+
+    if model == "gpt-4o":
+        completion = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+        )
+    else:
+        completion = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+        )
+    
+    response = completion.choices[0].message.content.strip()
+    response = remove_wrappers(response)
+    return response
+    
 
 def cluster_fn(
     courses: List[CourseNode],
@@ -25,28 +55,7 @@ def cluster_fn(
     label_prompt = build_label_gen_prompt(courses, k, topic_path)
     for attempt in range(3):
         try:
-
-            if model == "gpt-4o":
-                completion = client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": label_prompt}],
-                    temperature=0.3,
-                )
-            elif model == "o3-mini":
-                completion = client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": label_prompt}],
-                )
-            elif model == "o4-mini":
-                completion = client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": label_prompt}],
-                )
-            else:
-                raise ValueError(f"Unknown model: {model}")
-            
-    
-            label_raw = remove_wrappers(completion.choices[0].message.content.strip())
+            label_raw = get_llm_response(label_prompt, model)
             topics = json.loads(label_raw)
             if not isinstance(topics, list) or len(topics) != k:
                 raise ValueError(
@@ -69,28 +78,7 @@ def cluster_fn(
 
         for attempt in range(3):
             try:
-                if model == "gpt-4o":
-                    completion = client.chat.completions.create(
-                        model=model,
-                        messages=[{"role": "user", "content": assign_prompt}],
-                        temperature=0.3,
-                    )
-                elif model == "o3-mini":
-                    completion = client.chat.completions.create(
-                        model=model,
-                        messages=[{"role": "user", "content": assign_prompt}],
-                    )
-                elif model == "o4-mini":
-                    completion = client.chat.completions.create(
-                        model=model,
-                        messages=[{"role": "user", "content": assign_prompt}],
-                    )
-                else:
-                    raise ValueError(f"Unknown model: {model}")
-              
-                assignment_raw = remove_wrappers(
-                    completion.choices[0].message.content.strip()
-                )
+                assignment_raw = get_llm_response(assign_prompt, model)
                 batch_assignments = json.loads(assignment_raw)
 
                 if not isinstance(batch_assignments, dict) or len(
