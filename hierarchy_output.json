@@ -1,0 +1,126 @@
+{
+  "CS": {
+    "### Programming Languages & Software Development": {
+      "- ### OBJECT-ORIENTED PROGRAMMING IN C++": {},
+      "- ### Database Programming In Visual BasicNet": {},
+      "- ### Fundamentals of Programming 2": {},
+      "- ### Virtual Worlds and Game Programming": {},
+      "- ### Java Programming 2": {},
+      "- ### Programming in Visual Basic": {},
+      "- ### Programming in Python": {},
+      "- ### Object-Oriented Analysis And Design": {},
+      "- ### Computing Fundamentals II": {},
+      "- ### Python Programming and Abstractions": {},
+      "- ### Introduction to C-Sharp": {},
+      "- ### PROGRAMMING IN JAVA": {},
+      "- ### Programming in C++": {},
+      "- ### R Programming for Data Science": {},
+      "- ### Intro to Computer Programming": {},
+      "- ### C# PROGRAMMING USING MICROSOFT. NET": {},
+      "- ### C Language Programming": {},
+      "- ### C++ PROGRAMMING": {},
+      "- ### Fundamentals of Programming 1": {},
+      "- ### Java Programming, Introduction": {},
+      "- ### Computing Fundamentals I": {},
+      "- ### C++ Programming I": {},
+      "- ### R Programming": {},
+      "- ### Introduction To Computer Science II": {},
+      "- ### OBJECT-ORIENTED DATA   STRUCTURE AND ALGORITHMDESIGN": {},
+      "- ### Computer Fundamentals 1": {},
+      "- ### Systems Analysis and Design": {},
+      "- ### Introduction to Programming With PHP and MySQL": {},
+      "- ### PROGRAMMING IN JAVASCRIPT": {}
+    },
+    "### Data Structures & Algorithms": {
+      "- ### Introduction to Data Structures and Algorithms": {},
+      "- ### Data Structures with Java": {},
+      "- ### Data Structures with C++": {},
+      "- ### Advanced JAVA Programming and Algorithm with Data Structures": {},
+      "- ### Introduction to Data Structures: Design and implementation of larger projects using object-oriented software engineering principles with emphasis on definition and use of data structures including: arrays, stacks, queues, linked lists, trees, hash tables, dictionaries, sets and graphs using JAVA. Standard methods are used for sorting, searching and analyzing the relative efficiency of algorithms": {},
+      "- ### Data Structures and Algorithms: Java": {},
+      "- ### Introduction to Data Structures": {},
+      "- ### Fundamentals of Computer Science III - Data Structures": {},
+      "- ### Adv Prog w/Data Structures/C++": {},
+      "- ### Data Structures and Algorithms with C++": {},
+      "- ### Introduction to SQL Databases and NoSQL": {}
+    },
+    "### Operating Systems & System Administration": {
+      "### Linux System Administration and Certification": {},
+      "- ### Red Hat Linux Administration I": {},
+      "- ### Linux Administration 1": {},
+      "- ### Linux Systems Administration Projects": {},
+      "- ### Red Hat Linux Administration II": {},
+      "- ### Linux Administration 2": {},
+      "- ### Introduction to Unix/Linux": {},
+      "### Operating Systems Fundamentals": {},
+      "- ### Introduction to Computer Operating Systems": {},
+      "- ### Operating Systems": {},
+      "### Mobile Application Development": {},
+      "- ### Mobile Application Development - Android": {},
+      "- ### iOS Advanced Mobile App Development": {},
+      "### IT Infrastructure and Support": {},
+      "- ### Operating Systems and You: Becoming a Power User": {},
+      "- ### System Administration and IT Infrastructure Services": {},
+      "### Networking and Protocols": {},
+      "- ### Introduction to Networks": {}
+    },
+    "### Web Development & Internet Technologies": {
+      "### **Web Development Technologies**": {
+        "### Web Technologies and Languages": {},
+        "- ### Internet Programming": {},
+        "- ### HTML/XHTML PROGRAMMING": {},
+        "### Client-Side Development": {},
+        "- ### Advanced Dreamweaver Topics": {},
+        "### Server-Side Development": {},
+        "- ### Server-Side Web Development": {},
+        "### Web Application Development": {},
+        "- ### Web Programming In VB .Net": {},
+        "### Web Design and Maintenance": {}
+      },
+      "### **Content Management and Interactivity**": {
+        "### Web Development Technologies and Tools": {},
+        "- ### Introduction to Web Development": {},
+        "### Multimedia and Digital Media Creation": {},
+        "### Web and Mobile Application Development": {},
+        "### Document Creation and Management with Adobe Software": {},
+        "- ### Introduction to Adobe Acrobat": {},
+        "### Database Interaction and Management Using PHP": {},
+        "- ### Advanced PHP Programming": {}
+      },
+      "### **Enterprise and Application Development**": {
+        "### Enterprise-Level Java Development": {},
+        "- ### Enterprise Java Dev with J2EE": {},
+        "### JavaServer Pages (JSP) and Servlets": {},
+        "### Enterprise JavaBeans (EJB) and Session Management": {},
+        "### Java Database Connectivity (JDBC) and Data Management": {},
+        "### XML and Java Naming and Directory Interface (JNDI)": {}
+      },
+      "### **Digital Media and Web Projects**": {
+        "### Web Development": {},
+        "### Project Management for Digital Media": {}
+      },
+      "### **Game Development and Multimedia Creation**": {
+        "### Game Development Fundamentals": {},
+        "- ### Introduction to Computer Games Programming": {},
+        "### Game Design and Planning": {},
+        "### Game Production and Marketing": {},
+        "### Roles in Game Development Teams": {},
+        "### Industry Practices in Game Development": {}
+      }
+    },
+    "### Data Management & Databases": {
+      "### Relational Database Management Systems (RDBMS): Courses covering principles, design, and management of relational databases using systems such as MS SQL Server, MySQL, and Oracle.": {},
+      "- ### Microsoft SQL Server Database": {},
+      "- ### MySQL Databases": {},
+      "- ### Database Management Systems and Applications": {},
+      "### SQL and Database Querying: Courses focused on using SQL for database creation, querying, updating, and management, including advanced techniques like stored procedures, functions, and triggers.": {},
+      "- ### Relational Database Concepts and Structured Query Language": {},
+      "### Cloud Database Solutions: Courses that address cloud-based database management, including SQL and noSQL storage solutions on platforms like Amazon Web Services.": {},
+      "- ### Database Essentials in Amazon Web Services": {},
+      "### PL/SQL and Database Programming: Advanced programming courses that teach creating and managing programmatic database elements utilizing languages like PL/SQL for Oracle databases.": {},
+      "- ### Oracle PL/SQL Programming": {},
+      "### Database Design and Architecture: Courses that emphasize database design methodologies, normalization, integrity, and the creation of diagrams and schemas for efficient database architecture.": {},
+      "- ### Database Programming": {}
+    }
+  }
+}
