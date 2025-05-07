@@ -10,6 +10,8 @@ from configs.taxonomy_config import TaxonomyConfig
 from src.taxonomy.course import CourseNode
 from src.taxonomy.llm_cluster import cluster_fn
 
+from dataclasses import asdict
+
 
 @dataclass
 class TaxonomyNode:
@@ -37,10 +39,9 @@ class Taxonomy:
         self.save_dir.mkdir(parents=True, exist_ok=True)
 
         if len(courses) > cfg.max_courses:
+            random.seed(42)
             courses = random.sample(courses, cfg.max_courses)
         self.root = TaxonomyNode(topic="root", courses=courses)
-
-        self.ccn_to_taxonomy = {}
 
         if cfg.cluster_fn == "llm":
             self.cluster_fn = lambda courses, k, topic_path: cluster_fn(
@@ -68,9 +69,6 @@ class Taxonomy:
         for topic, courses in clusters.items():
             child = TaxonomyNode(topic=topic, parent=node, courses=courses)
             node.add_child(child)
-            self.ccn_to_taxonomy.update(
-                {course.control_number: child for course in courses}
-            )
             self.build(child, levels_remaining[1:])
 
     def get_topic_path(self, node: TaxonomyNode) -> List[str]:

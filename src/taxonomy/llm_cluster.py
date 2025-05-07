@@ -25,11 +25,27 @@ def cluster_fn(
     label_prompt = build_label_gen_prompt(courses, k, topic_path)
     for attempt in range(3):
         try:
-            completion = client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": label_prompt}],
-                temperature=0.3,
-            )
+
+            if model == "gpt-4o":
+                completion = client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": label_prompt}],
+                    temperature=0.3,
+                )
+            elif model == "o3-mini":
+                completion = client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": label_prompt}],
+                )
+            elif model == "o4-mini":
+                completion = client.chat.completions.create(
+                    model=model,
+                    messages=[{"role": "user", "content": label_prompt}],
+                )
+            else:
+                raise ValueError(f"Unknown model: {model}")
+            
+    
             label_raw = remove_wrappers(completion.choices[0].message.content.strip())
             topics = json.loads(label_raw)
             if not isinstance(topics, list) or len(topics) != k:
@@ -53,11 +69,25 @@ def cluster_fn(
 
         for attempt in range(3):
             try:
-                completion = client.chat.completions.create(
-                    model=model,
-                    messages=[{"role": "user", "content": assign_prompt}],
-                    temperature=0.3,
-                )
+                if model == "gpt-4o":
+                    completion = client.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": assign_prompt}],
+                        temperature=0.3,
+                    )
+                elif model == "o3-mini":
+                    completion = client.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": assign_prompt}],
+                    )
+                elif model == "o4-mini":
+                    completion = client.chat.completions.create(
+                        model=model,
+                        messages=[{"role": "user", "content": assign_prompt}],
+                    )
+                else:
+                    raise ValueError(f"Unknown model: {model}")
+              
                 assignment_raw = remove_wrappers(
                     completion.choices[0].message.content.strip()
                 )
@@ -106,7 +136,12 @@ def build_label_gen_prompt(
     You are at depth {len(topic_path)} of the taxonomy.
 
     Given the following university courses return exactly {k} distinct and
-    coherent subtopic labels that could be used to cluster the courses.
+    coherent subtopic labels that could be used to cluster the courses. The granularity 
+    of the subtopics should be appropriate for a university course taxonomy, and you should choose the level
+    of specificity based on the current topic path, and the depth you are currently evaluating courses at. A deeper
+    depth should have more specific subtopics, while a shallower depth should have broader subtopics.
+    (I.e, dental assisting on the first level is too specific, but on the second level might be appropriate.)
+    (I.e, mathematics on the first level might be appropriate)
 
     Courses:
     {serialized_courses}
