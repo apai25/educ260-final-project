@@ -4,7 +4,6 @@ import random
 import re
 import difflib  # added for fuzzy matching
 
-API_KEY= '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'
 
 client = OpenAI(api_key=API_KEY)
 cc_data = pd.read_csv("/home/awang/educ260-final-proj-data/course_catalog_202401161416.csv")
